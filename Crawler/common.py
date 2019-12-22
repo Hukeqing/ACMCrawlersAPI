@@ -4,26 +4,32 @@ from typing import Tuple, List, Optional, Union
 import time
 from Crawler.basic import crawlerRes
 from Crawler.Crawlers import *
+from Crawler.versionControl import *
 
-version = "1.0.0"
-dataVersion = "1.0"
-tryUseAPI = True
+tryUseAPI = False
+API_check = False
 
 
+# noinspection PyBroadException
 class API_control:
     """
-    Thanks to https://new.npuacm.info
+    Thanks to https://github.com/Liu233w/acm-statistics
     """
+    APIList = ['https://new.npuacm.info', 'http://119.3.172.223:3000']
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"}
     ojList = []
 
     @staticmethod
     def init_oj():
-        # response = requests.get("https://new.npuacm.info/api/crawlers/", headers=API_control.headers)
-        response = requests.get("http://119.3.172.223:3000/api/crawlers/", headers=API_control.headers)
-        # print(response.text)
-        data: dict = json.loads(response.text)
-        API_control.ojList = data["data"].keys()
+        for url in API_control.APIList:
+            try:
+                response = requests.get(url + "/api/crawlers/", headers=API_control.headers)
+                data: dict = json.loads(response.text)
+            except Exception as e:
+                continue
+            else:
+                API_control.ojList = data["data"].keys()
+                break
 
     @staticmethod
     def get_solved(oj: str, name: str) -> crawlerRes:
@@ -95,20 +101,24 @@ class FileManager:
         self.data = json.loads(str(f.read(), encoding='utf-8'))
         if self.data["version"] == dataVersion:
             self.acm.set_name(self.data["name"])
-            for item in self.data["account"].items():
-                self.acm.add_account(item)
-            if "database" not in self.data.keys():
-                self.data["database"] = dict()
-            self.data["database"][str(self.curTime)] = dict()
-            self.data["database"][str(self.curTime)]["solved"] = self.acm.solvedCount
-            self.data["database"][str(self.curTime)]["submissions"] = self.acm.submissions
+            for account in self.data["account"].items():
+                self.acm.add_account(account)
         f.close()
+
+    def add_in_database(self):
+        if "database" not in self.data.keys():
+            self.data["database"] = dict()
+        self.data["database"][str(self.curTime)] = dict()
+        self.data["database"][str(self.curTime)]["solved"] = self.acm.solvedCount
+        self.data["database"][str(self.curTime)]["submissions"] = self.acm.submissions
         f = open(self.file_path, "w")
         f.write(json.dumps(self.data))
         f.close()
 
     def get_last_data(self) -> Tuple[str, dict]:
-        lastData = (0, {})
+        lastData = (0, {"solved": 0, "submissions": 0})
+        if "database" not in self.data.keys():
+            self.data["database"] = dict()
         for times, value in self.data["database"].items():
             if int(times) > lastData[0] and int(times) != self.curTime:
                 lastData = (int(times), value)
@@ -117,6 +127,9 @@ class FileManager:
 
 def try_api():
     global Call
+    global API_check
+    if API_check:
+        return
     if tryUseAPI:
         try:
             API_control.init_oj()
@@ -125,6 +138,16 @@ def try_api():
             Call = CrawlersControl
     else:
         Call = CrawlersControl
+    API_check = True
+
+
+def change_try_mode():
+    global tryUseAPI
+    global API_check
+    tryUseAPI = not tryUseAPI
+    API_check = False
+    if tryUseAPI:
+        try_api()
 
 
 if __name__ == '__main__':
@@ -134,3 +157,9 @@ if __name__ == '__main__':
     test = FileManager("../test.json")
     print("全部OJ刷题数量统计\n姓名： ", test.acm.name, "\n解决/提交：", test.acm.solvedCount, "/", test.acm.submissions)
     print("上次查询：", test.get_last_data()[0], test.get_last_data()[1]["solved"], "/", test.get_last_data()[1]["submissions"])
+    print("more detail:")
+    for item in test.acm.accountList:
+        if item.error:
+            print("出错\tOJ:", item.oj, "name:", item.username, "message:", item.message)
+        else:
+            print("oj:", item.oj, "name:", item.username, "solved:", item.solved, "submissions:", item.submissions, "solved list:", item.solvedList)

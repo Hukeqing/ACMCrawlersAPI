@@ -131,6 +131,5 @@ last*.*
 *.jpg
 source/
 *.obj
-*.jpg
 *.png
 *.mtl
