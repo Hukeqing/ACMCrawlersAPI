@@ -2,7 +2,7 @@ import requests
 import json
 import webbrowser
 
-version = "1.0.0"
+version = "v1.0.0"
 dataVersion = "1.0"
 laterVersion = ""
 
@@ -24,4 +24,4 @@ def update():
 def get_new_version():
     if laterVersion == "":
         update()
-    webbrowser.open('https://github.com/Hukeqing/Superior-Tower-Defence/releases/tag/' + laterVersion)
+    webbrowser.open('https://github.com/Hukeqing/ACMCrawlersAPI/releases/tag/' + laterVersion)
