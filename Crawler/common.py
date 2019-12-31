@@ -6,7 +6,7 @@ from Crawler.basic import crawlerRes
 from Crawler.Crawlers import *
 from Crawler.versionControl import *
 
-tryUseAPI = False
+tryUseAPI = True
 API_check = False
 
 
@@ -94,6 +94,7 @@ class FileManager:
         self.data: Optional[dict] = None
         self.acm: ACMer = ACMer()
         self.curTime: int = int(time.time())
+        self.end: bool = False
         self.init_data()
 
     def init_data(self):
@@ -102,8 +103,13 @@ class FileManager:
         if self.data["version"] == dataVersion:
             self.acm.set_name(self.data["name"])
             for account in self.data["account"].items():
-                self.acm.add_account(account)
+                if isinstance(account[1], str):
+                    self.acm.add_account(account)
+                else:
+                    for user in account[1]:
+                        self.acm.add_account((account[0], user))
         f.close()
+        self.end = True
 
     def add_in_database(self):
         if "database" not in self.data.keys():
