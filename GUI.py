@@ -1,11 +1,9 @@
+import json
 import tkinter
 import tkinter.messagebox
 import tkinter.filedialog
 from Crawler import *
 import threading
-
-
-# import threading
 
 
 def check_for_update():
@@ -19,14 +17,18 @@ def check_for_update():
 # def thread_try():
 
 ACMer = None
-file = ""
 
 
-def thr():
+def thr(file_name):
     global ACMer
     global log
     log.set("Crawling")
-    ACMer = FileManager(file)
+    try:
+        ACMer = FileManager(file_name)
+    except json.decoder.JSONDecodeError as e:
+        tkinter.messagebox.showerror('Error', 'JSON Error\nJSON编码出错')
+        log.set("Crawl Error")
+        exit(0)
     if tkinter.messagebox.askyesno('Over', 'Name: ' + str(ACMer.acm.name) +
                                            '\nSolved: ' + str(ACMer.acm.solvedCount) +
                                            '\nSubmissions: ' + str(ACMer.acm.submissions) +
@@ -40,14 +42,13 @@ def thr():
 
 def crawler():
     try_api()
-    global file
     file = tkinter.filedialog.askopenfilename(initialdir='.')
     if file == '':
         return
-    msg_handle = threading.Thread(target=thr, args=())
+    msg_handle = threading.Thread(target=thr, kwargs={"file_name": file})
     msg_handle.daemon = True
-    msg_handle.start()
     tkinter.messagebox.showinfo('running', 'Crawler is running, please wait for a minute\n爬虫正在工作，请耐心等待')
+    msg_handle.start()
 
 
 mainWin = tkinter.Tk()
@@ -68,6 +69,12 @@ crawlerButton.pack()
 
 space2 = tkinter.Label(mainWin)
 space2.pack()
+
+# historyButton = tkinter.Button(mainWin, text='Get Query History')
+# historyButton.pack()
+#
+# space3 = tkinter.Label(mainWin)
+# space3.pack()
 
 log = tkinter.StringVar()
 log.set("Welcome")

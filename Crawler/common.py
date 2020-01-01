@@ -1,13 +1,13 @@
-import requests
-import json
-from typing import Tuple, List, Optional, Union
 import time
+from typing import Tuple, List, Optional
+import threading
+
 from Crawler.basic import crawlerRes
-from Crawler.Crawlers import *
 from Crawler.versionControl import *
 
 tryUseAPI = True
 API_check = False
+API_url = ""
 
 
 # noinspection PyBroadException
@@ -21,6 +21,7 @@ class API_control:
 
     @staticmethod
     def init_oj():
+        global API_url
         for url in API_control.APIList:
             try:
                 response = requests.get(url + "/api/crawlers/", headers=API_control.headers)
@@ -29,6 +30,7 @@ class API_control:
                 continue
             else:
                 API_control.ojList = data["data"].keys()
+                API_url = url + "/api/crawlers/"
                 break
 
     @staticmethod
@@ -37,8 +39,7 @@ class API_control:
         if oj not in API_control.ojList:
             res.set_error("oj name error!")
         else:
-            # response = requests.get("https://new.npuacm.info/api/crawlers/" + oj + "/" + name, headers=API_control.headers)
-            response = requests.get("http://119.3.172.223:3000/api/crawlers/" + oj + "/" + name, headers=API_control.headers)
+            response = requests.get(API_url + oj + "/" + name, headers=API_control.headers)
             data: dict = json.loads(response.text)
             if data["error"]:
                 res.set_error(data["message"])
@@ -102,12 +103,19 @@ class FileManager:
         self.data = json.loads(str(f.read(), encoding='utf-8'))
         if self.data["version"] == dataVersion:
             self.acm.set_name(self.data["name"])
+            threadList = []
             for account in self.data["account"].items():
                 if isinstance(account[1], str):
-                    self.acm.add_account(account)
+                    threadList.append(threading.Thread(target=self.acm.add_account, kwargs={"other": account}))
+                    threadList[-1].start()
+                    # self.acm.add_account(account)
                 else:
                     for user in account[1]:
-                        self.acm.add_account((account[0], user))
+                        threadList.append(threading.Thread(target=self.acm.add_account, kwargs={"other": (account[0], user)}))
+                        threadList[-1].start()
+            # map(lambda x: x.join(), threadList)
+            for i in threadList:
+                i.join()
         f.close()
         self.end = True
 
@@ -117,8 +125,8 @@ class FileManager:
         self.data["database"][str(self.curTime)] = dict()
         self.data["database"][str(self.curTime)]["solved"] = self.acm.solvedCount
         self.data["database"][str(self.curTime)]["submissions"] = self.acm.submissions
-        f = open(self.file_path, "w")
-        f.write(json.dumps(self.data))
+        f = open(self.file_path, "w", encoding='utf-8')
+        f.write(json.dumps(self.data, indent=4, ensure_ascii=False))
         f.close()
 
     def get_last_data(self) -> Tuple[str, dict]:
