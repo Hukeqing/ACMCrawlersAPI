@@ -13,8 +13,8 @@
             type: 'get',
             success: function (response) {
                 console.log(response);
-                downloadurl = "https://github.com/Hukeqing/ACMCrawlersAPI/releases/download/" + response.tag_name + "/GUI.exe";
-                document.getElementById("downloadlinked").innerHTML = "Click To Download";
+                downloadurl = response.assets[0].browser_download_url;
+                document.getElementById("downloadlinked").innerHTML = "Click To Download: <br>" + response.tag_name;
                 document.getElementById("downloadlinked").href = downloadurl;
             }
         });
@@ -25,8 +25,14 @@
     </script>
     <div style="text-align:center;">
         <a href="" id="downloadlinked" onclick="downloadstart()"
-           style="position:relative;font-size:50px;color:#000000; top: 200px;">
+           style="position:relative;font-size:50px;color:#ff0000; top: 200px;">
             Checking the latest version, please wait...
+        </a>
+    </div>
+    <div style="text-align:center;">
+        <a href="https://github.com/Hukeqing/ACMCrawlersAPI"
+           style="position:relative;font-size:20px;color:#000000; top: 300px;" target="_blank">
+            To GitHub
         </a>
     </div>
 </div>
