@@ -24,7 +24,7 @@ def update():
 def get_new_version():
     if laterVersion == "":
         update()
-    webbrowser.open('https://github.com/Hukeqing/ACMCrawlersAPI/releases/tag/' + laterVersion)
+    webbrowser.open('https://hukeqing.github.io/ACMCrawlersAPI/')
 
 
 def version_fun(argv):
