@@ -90,17 +90,20 @@ class ACMer:
 
 
 class FileManager:
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, check: bool = True):
         self.file_path = file_path
         self.data: Optional[dict] = None
         self.acm: ACMer = ACMer()
         self.curTime: int = int(time.time())
         self.end: bool = False
-        self.init_data()
-
-    def init_data(self):
         f = open(self.file_path, "rb")
         self.data = json.loads(str(f.read(), encoding='utf-8'))
+        f.close()
+        if check:
+            self.check = True
+            self.init_data()
+
+    def init_data(self):
         if self.data["version"] == dataVersion:
             self.acm.set_name(self.data["name"])
             threadList = []
@@ -116,17 +119,18 @@ class FileManager:
             # map(lambda x: x.join(), threadList)
             for i in threadList:
                 i.join()
-        f.close()
-        self.end = True
+            self.end = True
 
     def add_in_database(self):
+        if not self.check:
+            self.init_data()
         if "database" not in self.data.keys():
             self.data["database"] = dict()
         self.data["database"][str(self.curTime)] = dict()
         self.data["database"][str(self.curTime)]["solved"] = self.acm.solvedCount
         self.data["database"][str(self.curTime)]["submissions"] = self.acm.submissions
         f = open(self.file_path, "w", encoding='utf-8')
-        f.write(json.dumps(self.data, indent=4, ensure_ascii=False))
+        f.write(json.dumps(self.data, indent=2, ensure_ascii=False))
         f.close()
 
     def get_last_data(self) -> Tuple[str, dict]:
@@ -137,6 +141,15 @@ class FileManager:
             if int(times) > lastData[0] and int(times) != self.curTime:
                 lastData = (int(times), value)
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(lastData[0])), lastData[1]
+
+    def get_history(self):
+        if "database" not in self.data.keys():
+            return None
+        res = str()
+        for times, value in self.data["database"].items():
+            res += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(times))) + '\t' + str(value['solved']) + '/' + str(
+                value['submissions']) + '\n'
+        return res
 
 
 def try_api():

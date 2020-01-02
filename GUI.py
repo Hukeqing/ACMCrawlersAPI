@@ -4,6 +4,8 @@ import tkinter.messagebox
 import tkinter.filedialog
 from Crawler import *
 import threading
+import Crawler.versionControl
+import sys
 
 
 def check_for_update():
@@ -14,8 +16,6 @@ def check_for_update():
         tkinter.messagebox.showinfo('Update', 'There is no new version or check fail')
 
 
-# def thread_try():
-
 ACMer = None
 
 
@@ -25,8 +25,12 @@ def thr(file_name):
     log.set("Crawling")
     try:
         ACMer = FileManager(file_name)
-    except json.decoder.JSONDecodeError as e:
+    except json.decoder.JSONDecodeError:
         tkinter.messagebox.showerror('Error', 'JSON Error\nJSON编码出错')
+        log.set("Crawl Error")
+        exit(0)
+    except Exception as e:
+        tkinter.messagebox.showerror('Error', e)
         log.set("Crawl Error")
         exit(0)
     if tkinter.messagebox.askyesno('Over', 'Name: ' + str(ACMer.acm.name) +
@@ -51,8 +55,24 @@ def crawler():
     msg_handle.start()
 
 
+def history():
+    global ACMer
+    file = tkinter.filedialog.askopenfilename(initialdir='.')
+    if file == '':
+        return
+    try:
+        ACMer = FileManager(file, False)
+    except json.decoder.JSONDecodeError as e:
+        tkinter.messagebox.showerror('Error', 'JSON Error\nJSON编码出错')
+        log.set("Crawl Error")
+    tkinter.messagebox.showinfo('History', ACMer.get_history())
+
+
+if len(sys.argv) > 1:
+    Crawler.versionControl.version_fun(sys.argv)
+
 mainWin = tkinter.Tk()
-mainWin.title("ZJGSU OnlineJudge Counter")
+mainWin.title("ZJGSU OnlineJudge Counter " + Crawler.versionControl.version)
 mainWin.minsize(500, 300)
 
 mainLabel = tkinter.Label(mainWin, text='ZJGSU OnlineJudge Counter', font=('Arial', 20), height=2)
@@ -70,11 +90,11 @@ crawlerButton.pack()
 space2 = tkinter.Label(mainWin)
 space2.pack()
 
-# historyButton = tkinter.Button(mainWin, text='Get Query History')
-# historyButton.pack()
-#
-# space3 = tkinter.Label(mainWin)
-# space3.pack()
+historyButton = tkinter.Button(mainWin, text='Get Query History', command=history)
+historyButton.pack()
+
+space3 = tkinter.Label(mainWin)
+space3.pack()
 
 log = tkinter.StringVar()
 log.set("Welcome")

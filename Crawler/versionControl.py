@@ -2,7 +2,7 @@ import requests
 import json
 import webbrowser
 
-version = "v1.1.0"
+version = "v1.1.1"
 dataVersion = "1.0"
 laterVersion = ""
 
@@ -25,3 +25,12 @@ def get_new_version():
     if laterVersion == "":
         update()
     webbrowser.open('https://github.com/Hukeqing/ACMCrawlersAPI/releases/tag/' + laterVersion)
+
+
+def version_fun(argv):
+    if argv[1] == 'download':
+        exit(0)
+    elif argv[1] == 'install':
+        exit(0)
+    elif argv[1] == 'uninstall':
+        exit(0)
