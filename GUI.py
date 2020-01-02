@@ -1,3 +1,4 @@
+import functools
 import json
 import tkinter
 import tkinter.messagebox
@@ -30,9 +31,20 @@ def thr(file_name):
         log.set("Crawl Error")
         exit(0)
     except Exception as e:
-        tkinter.messagebox.showerror('Error', e)
+        tkinter.messagebox.showerror('Error', 'Unknown Error')
         log.set("Crawl Error")
         exit(0)
+    errorMsg = ""
+    if len(ACMer.acm.errorAccountList) != 0:
+        errorMsg += "Error Account:\n"
+        for item in ACMer.acm.errorAccountList:
+            errorMsg += '\t' + item.oj + ' : ' + item.username + '\n'
+    if len(ACMer.acm.repeatAccountList) != 0:
+        errorMsg += "Repeat Account:\n"
+        for item in ACMer.acm.repeatAccountList:
+            errorMsg += '\t' + item[0] + ' : ' + item[1] + '\n'
+    if errorMsg != "":
+        tkinter.messagebox.showerror('Error', errorMsg)
     if tkinter.messagebox.askyesno('Over', 'Name: ' + str(ACMer.acm.name) +
                                            '\nSolved: ' + str(ACMer.acm.solvedCount) +
                                            '\nSubmissions: ' + str(ACMer.acm.submissions) +
@@ -62,9 +74,14 @@ def history():
         return
     try:
         ACMer = FileManager(file, False)
-    except json.decoder.JSONDecodeError as e:
+    except json.decoder.JSONDecodeError:
         tkinter.messagebox.showerror('Error', 'JSON Error\nJSON编码出错')
         log.set("Crawl Error")
+        exit(0)
+    except Exception:
+        tkinter.messagebox.showerror('Error', 'Unknown Error')
+        log.set("Crawl Error")
+        exit(0)
     tkinter.messagebox.showinfo('History', ACMer.get_history())
 
 
