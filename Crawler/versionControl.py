@@ -29,8 +29,13 @@ def get_new_version():
 
 def version_fun(argv):
     if argv[1] == 'download':
-        exit(0)
+        pass
     elif argv[1] == 'install':
-        exit(0)
+        pass
     elif argv[1] == 'uninstall':
-        exit(0)
+        pass
+    exit(0)
+
+
+def data_version(data):
+    return '{"version": "2.0","user": [' + data + ']}'

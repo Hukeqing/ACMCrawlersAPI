@@ -107,19 +107,20 @@ class FileManager:
 
     def init_data(self):
         threadList = []
-        if self.data["version"] == dataVersion:
-            for index, user in enumerate(self.data["user"]):
-                self.acm.append(ACMer())
-                self.acm[-1].set_name(user["name"])
-                for account in user["account"].items():
-                    if isinstance(account[1], str):
-                        threadList.append(threading.Thread(target=self.acm[-1].add_account, kwargs={"other": account}))
+        if self.data["version"] != dataVersion:
+            del self.data['version']
+            self.data = json.loads(data_version(json.dumps(self.data)))
+        for index, user in enumerate(self.data["user"]):
+            self.acm.append(ACMer())
+            self.acm[-1].set_name(user["name"])
+            for account in user["account"].items():
+                if isinstance(account[1], str):
+                    threadList.append(threading.Thread(target=self.acm[-1].add_account, kwargs={"other": account}))
+                    threadList[-1].start()
+                else:
+                    for account_name in account[1]:
+                        threadList.append(threading.Thread(target=self.acm[-1].add_account, kwargs={"other": (account[0], account_name)}))
                         threadList[-1].start()
-                    else:
-                        for account_name in account[1]:
-                            threadList.append(
-                                threading.Thread(target=self.acm[-1].add_account, kwargs={"other": (account[0], account_name)}))
-                            threadList[-1].start()
             for i in threadList:
                 i.join()
             self.end = True
