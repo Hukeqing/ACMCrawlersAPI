@@ -3,7 +3,7 @@ import json
 import webbrowser
 
 version = "v1.1.2"
-dataVersion = "1.0"
+dataVersion = "2.0"
 laterVersion = ""
 
 
