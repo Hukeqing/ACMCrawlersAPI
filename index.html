@@ -14,7 +14,7 @@
             success: function (response) {
                 console.log(response);
                 downloadurl = response.assets[0].browser_download_url;
-                document.getElementById("downloadlinked").innerHTML = "Click To Download: <br>" + response.tag_name;
+                document.getElementById("downloadlinked").innerHTML = "Click To Download: <br>" + response.tag_name + "<br><h1>" + response.name + "</h1>";
                 document.getElementById("downloadlinked").href = downloadurl;
             }
         });
