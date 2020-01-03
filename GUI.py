@@ -34,25 +34,26 @@ def thr(file_name):
         tkinter.messagebox.showerror('Error', 'Unknown Error')
         log.set("Crawl Error")
         exit(0)
-    errorMsg = ""
-    if len(ACMer.acm.errorAccountList) != 0:
-        errorMsg += "Error Account:\n"
-        for item in ACMer.acm.errorAccountList:
-            errorMsg += '\t' + item.oj + ' : ' + item.username + '\n'
-    if len(ACMer.acm.repeatAccountList) != 0:
-        errorMsg += "Repeat Account:\n"
-        for item in ACMer.acm.repeatAccountList:
-            errorMsg += '\t' + item[0] + ' : ' + item[1] + '\n'
-    if errorMsg != "":
-        tkinter.messagebox.showerror('Error', errorMsg)
-    if tkinter.messagebox.askyesno('Over', 'Name: ' + str(ACMer.acm.name) +
-                                           '\nSolved: ' + str(ACMer.acm.solvedCount) +
-                                           '\nSubmissions: ' + str(ACMer.acm.submissions) +
-                                           '\nLast query time: ' + ACMer.get_last_data()[0] + '\n\t' +
-                                           str(ACMer.get_last_data()[1]['solved']) + '/' +
-                                           str(ACMer.get_last_data()[1]['submissions']) +
-                                           '\n\nAdd to database?'):
-        ACMer.add_in_database()
+    # errorMsg = ""
+    # if len(ACMer.acm.errorAccountList) != 0:
+    #     errorMsg += "Error Account:\n"
+    #     for item in ACMer.acm.errorAccountList:
+    #         errorMsg += '\t' + item.oj + ' : ' + item.username + '\n'
+    # if len(ACMer.acm.repeatAccountList) != 0:
+    #     errorMsg += "Repeat Account:\n"
+    #     for item in ACMer.acm.repeatAccountList:
+    #         errorMsg += '\t' + item[0] + ' : ' + item[1] + '\n'
+    # if errorMsg != "":
+    #     tkinter.messagebox.showerror('Error', errorMsg)
+    for index, user in enumerate(ACMer.acm):
+        if tkinter.messagebox.askyesno('Over', 'Name: ' + user.name +
+                                               '\nSolved: ' + str(user.solvedCount) +
+                                               '\nSubmissions: ' + str(user.submissions) +
+                                               '\nLast query time: ' + ACMer.get_last_data(index)[0] + '\n\t' +
+                                               str(ACMer.get_last_data(index)[1]['solved']) + '/' +
+                                               str(ACMer.get_last_data(index)[1]['submissions']) +
+                                               '\n\nAdd to database?'):
+            ACMer.add_in_database(index)
     log.set("Crawled")
 
 
