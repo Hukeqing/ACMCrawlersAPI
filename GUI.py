@@ -1,12 +1,12 @@
-import functools
 import json
-import tkinter
-import tkinter.messagebox
-import tkinter.filedialog
-from Crawler import *
-import threading
-import Crawler.versionControl
 import sys
+import threading
+import tkinter
+import tkinter.filedialog
+import tkinter.messagebox
+
+import Crawler.versionControl
+from Crawler import *
 
 
 def check_for_update():

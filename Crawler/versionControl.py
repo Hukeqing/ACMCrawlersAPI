@@ -37,5 +37,6 @@ def version_fun(argv):
     exit(0)
 
 
-def data_version(data):
-    return '{"version": "2.0","user": [' + data + ']}'
+def data_version(data, oldVersion):
+    if oldVersion == '1.0':
+        return '{"version": "2.0","user": [' + data + ']}'

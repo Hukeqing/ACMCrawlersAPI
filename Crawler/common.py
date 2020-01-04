@@ -108,8 +108,9 @@ class FileManager:
     def init_data(self):
         threadList = []
         if self.data["version"] != dataVersion:
+            oldVersion = self.data["version"]
             del self.data['version']
-            self.data = json.loads(data_version(json.dumps(self.data)))
+            self.data = json.loads(data_version(json.dumps(self.data), oldVersion))
         for index, user in enumerate(self.data["user"]):
             self.acm.append(ACMer())
             self.acm[-1].set_name(user["name"])
