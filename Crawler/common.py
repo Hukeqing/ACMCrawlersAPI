@@ -2,6 +2,8 @@ import time
 from typing import Tuple, List, Optional
 import threading
 
+import chardet
+
 from Crawler.basic import crawlerRes
 from Crawler.versionControl import *
 
@@ -98,7 +100,8 @@ class FileManager:
         self.end: bool = False
         f = open(self.file_path, "rb")
         a = f.read()
-        a = str(a, encoding='utf-8')
+        result = chardet.detect(a)
+        a = a.decode(result['encoding']).encode('utf-8')
         self.data = json.loads(a)
         f.close()
         if check:
