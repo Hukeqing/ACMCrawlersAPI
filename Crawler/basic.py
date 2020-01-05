@@ -13,7 +13,7 @@ class crawlerRes:
         self.solvedList.add(value)
 
     def set_solved_list(self, value: list):
-        self.solvedList = set(value)
+        self.solvedList = set(value) if value is not None else set()
 
     def set_solved(self, value: int):
         self.solved = value
