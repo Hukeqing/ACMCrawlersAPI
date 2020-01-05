@@ -26,7 +26,7 @@ class API_control:
             try:
                 response = requests.get(url + "/api/crawlers/", headers=API_control.headers)
                 data: dict = json.loads(response.text)
-            except Exception as e:
+            except Exception:
                 continue
             else:
                 API_control.ojList = data["data"].keys()
@@ -185,16 +185,7 @@ def change_try_mode():
     if tryUseAPI:
         try_api()
 
-# if __name__ == '__main__':
-#     # 时间戳： time.time()
-#     # 时间戳解析： time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(1576847361))
-#     try_api()
-#     test = FileManager("../test.json")
-#     print("全部OJ刷题数量统计\n姓名： ", test.acm.name, "\n解决/提交：", test.acm.solvedCount, "/", test.acm.submissions)
-#     print("上次查询：", test.get_last_data()[0], test.get_last_data()[1]["solved"], "/", test.get_last_data()[1]["submissions"])
-#     print("more detail:")
-#     for item in test.acm.accountList:
-#         if item.error:
-#             print("出错\tOJ:", item.oj, "name:", item.username, "message:", item.message)
-#         else:
-#             print("oj:", item.oj, "name:", item.username, "solved:", item.solved, "submissions:", item.submissions, "solved list:", item.solvedList)
+
+if __name__ == '__main__':
+    try_api()
+    print(API_control.ojList)

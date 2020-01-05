@@ -2,7 +2,7 @@ import requests
 import json
 import webbrowser
 
-version = "v2.0.0"
+version = "v2.0.1"
 dataVersion = "2.0"
 laterVersion = ""
 

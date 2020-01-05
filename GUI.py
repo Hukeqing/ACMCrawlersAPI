@@ -34,17 +34,20 @@ def thr(file_name):
         tkinter.messagebox.showerror('Error', 'Unknown Error')
         log.set("Crawl Error")
         exit(0)
-    # errorMsg = ""
-    # if len(ACMer.acm.errorAccountList) != 0:
-    #     errorMsg += "Error Account:\n"
-    #     for item in ACMer.acm.errorAccountList:
-    #         errorMsg += '\t' + item.oj + ' : ' + item.username + '\n'
-    # if len(ACMer.acm.repeatAccountList) != 0:
-    #     errorMsg += "Repeat Account:\n"
-    #     for item in ACMer.acm.repeatAccountList:
-    #         errorMsg += '\t' + item[0] + ' : ' + item[1] + '\n'
-    # if errorMsg != "":
-    #     tkinter.messagebox.showerror('Error', errorMsg)
+    errorMsg = ""
+    for item in ACMer.acm:
+        if len(item.errorAccountList) != 0 or len(item.repeatAccountList) != 0:
+            errorMsg += item.name + ":\n"
+            if len(item.errorAccountList) != 0:
+                errorMsg += "\tError Account:\n"
+                for ac in item.errorAccountList:
+                    errorMsg += "\t\t" + ac.oj + " : " + ac.username + "\n"
+            if len(item.repeatAccountList) != 0:
+                errorMsg += "\tRepeat Account:\n"
+                for ac in item.repeatAccountList:
+                    errorMsg += "\t\t" + ac[0] + " : " + ac[1] + "\n"
+    if errorMsg != "":
+        tkinter.messagebox.showerror('Error', errorMsg)
     for index, user in enumerate(ACMer.acm):
         if tkinter.messagebox.askyesno('Over', 'Name: ' + user.name +
                                                '\nSolved: ' + str(user.solvedCount) +
