@@ -83,7 +83,7 @@ class ACMer:
             self.repeatAccountList.append(other)
         elif not newAccount.error:
             self.solvedCount += newAccount.solved
-            self.submissions += newAccount.submissions
+            self.submissions += newAccount.submissions if newAccount.submissions is not None else 0
             self.accountList.append(newAccount)
         else:
             self.errorAccountList.append(newAccount)
