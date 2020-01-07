@@ -156,11 +156,19 @@ class FileManager:
         res = str()
         for user in self.data["user"]:
             if "database" not in user.keys():
-                return None
+                continue
             res += user["name"] + ":\n"
             for times, value in user["database"].items():
                 res += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(times))) + '\t' + str(value['solved']) + '/' + str(
                     value['submissions']) + '\n'
+        return res
+
+    def get_user(self):
+        res = str()
+        for user in self.data["user"]:
+            res += user["name"] + ":\n"
+            for oj, username in user["account"].items():
+                res += '\t' + oj + ' : ' + username + '\n'
         return res
 
 

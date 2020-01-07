@@ -72,7 +72,7 @@ def crawler():
     msg_handle.start()
 
 
-def history():
+def set_acm_er():
     global ACMer
     file = tkinter.filedialog.askopenfilename(initialdir='.')
     if file == '':
@@ -87,12 +87,21 @@ def history():
         tkinter.messagebox.showerror('Error', 'Unknown Error')
         log.set("Crawl Error")
         exit(0)
+
+
+def history():
+    set_acm_er()
     tkinter.messagebox.showinfo('History', ACMer.get_history())
+
+
+def account_data():
+    set_acm_er()
+    tkinter.messagebox.showinfo('History', ACMer.get_user())
 
 
 mainWin = tkinter.Tk()
 mainWin.title("ZJGSU OnlineJudge Counter " + Crawler.versionControl.version)
-mainWin.minsize(500, 300)
+mainWin.minsize(600, 400)
 
 mainLabel = tkinter.Label(mainWin, text='ZJGSU OnlineJudge Counter', font=('Arial', 20), height=2)
 mainLabel.pack()
@@ -114,6 +123,12 @@ historyButton.pack()
 
 space3 = tkinter.Label(mainWin)
 space3.pack()
+
+accountButton = tkinter.Button(mainWin, text='Get User Account', command=account_data)
+accountButton.pack()
+
+space4 = tkinter.Label(mainWin)
+space4.pack()
 
 log = tkinter.StringVar()
 log.set("Welcome")
