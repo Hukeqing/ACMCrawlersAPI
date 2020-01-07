@@ -33,6 +33,7 @@ def thr(file_name):
     except Exception as e:
         tkinter.messagebox.showerror('Error', 'Unknown Error')
         log.set("Crawl Error")
+        print(e)
         exit(0)
     errorMsg = ""
     for item in ACMer.acm:
@@ -89,9 +90,6 @@ def history():
     tkinter.messagebox.showinfo('History', ACMer.get_history())
 
 
-if len(sys.argv) > 1:
-    Crawler.versionControl.version_fun(sys.argv)
-
 mainWin = tkinter.Tk()
 mainWin.title("ZJGSU OnlineJudge Counter " + Crawler.versionControl.version)
 mainWin.minsize(500, 300)
@@ -122,5 +120,31 @@ log.set("Welcome")
 
 crawlerLog = tkinter.Label(textvariable=log, bg='blue', font=('Arial', 20))
 crawlerLog.pack()
+
+if len(sys.argv) > 1:
+    if sys.argv[1] == '-d':
+        pass
+    elif sys.argv[1] == '-i':
+        pass
+    elif sys.argv[1] == '-u':
+        pass
+    elif sys.argv[1] == '-c':
+        try_api()
+        handle = threading.Thread(target=thr, kwargs={"file_name": sys.argv[2]})
+        handle.daemon = True
+        tkinter.messagebox.showinfo('running', 'Crawler is running, please wait for a minute\n爬虫正在工作，请耐心等待')
+        handle.start()
+    elif sys.argv[1] == '-q':
+        try:
+            ACMer = FileManager(sys.argv[2], False)
+        except json.decoder.JSONDecodeError:
+            tkinter.messagebox.showerror('Error', 'JSON Error\nJSON编码出错')
+            log.set("Crawl Error")
+            exit(0)
+        except Exception:
+            tkinter.messagebox.showerror('Error', 'Unknown Error')
+            log.set("Crawl Error")
+            exit(0)
+        tkinter.messagebox.showinfo('History', ACMer.get_history())
 
 mainWin.mainloop()
