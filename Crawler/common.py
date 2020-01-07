@@ -168,7 +168,10 @@ class FileManager:
         for user in self.data["user"]:
             res += user["name"] + ":\n"
             for oj, username in user["account"].items():
-                res += '\t' + oj + ' : ' + username + '\n'
+                if isinstance(username, list):
+                    res += '\t' + oj + ' : ' + str(username) + '\n'
+                else:
+                    res += '\t' + oj + ' : ' + username + '\n'
         return res
 
 

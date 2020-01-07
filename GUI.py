@@ -20,21 +20,11 @@ def check_for_update():
 ACMer = None
 
 
-def thr(file_name):
-    global ACMer
+def thr(file: str = None):
     global log
     log.set("Crawling")
-    try:
-        ACMer = FileManager(file_name)
-    except json.decoder.JSONDecodeError:
-        tkinter.messagebox.showerror('Error', 'JSON Error\nJSON编码出错')
-        log.set("Crawl Error")
-        exit(0)
-    except Exception as e:
-        tkinter.messagebox.showerror('Error', 'Unknown Error')
-        log.set("Crawl Error")
-        print(e)
-        exit(0)
+    if not set_acm_er(file=file, cr=True):
+        return
     errorMsg = ""
     for item in ACMer.acm:
         if len(item.errorAccountList) != 0 or len(item.repeatAccountList) != 0:
@@ -63,39 +53,41 @@ def thr(file_name):
 
 def crawler():
     try_api()
-    file = tkinter.filedialog.askopenfilename(initialdir='.')
-    if file == '':
-        return
-    msg_handle = threading.Thread(target=thr, kwargs={"file_name": file})
+    msg_handle = threading.Thread(target=thr)
     msg_handle.daemon = True
-    tkinter.messagebox.showinfo('running', 'Crawler is running, please wait for a minute\n爬虫正在工作，请耐心等待')
     msg_handle.start()
 
 
-def set_acm_er():
+def set_acm_er(file: str = None, cr: bool = False):
     global ACMer
-    file = tkinter.filedialog.askopenfilename(initialdir='.')
-    if file == '':
-        return
+    if file is None:
+        file = tkinter.filedialog.askopenfilename(initialdir='.')
+        if file == '':
+            return False
+    if cr:
+        tkinter.messagebox.showinfo('running', 'Crawler is running, please wait for a minute\n爬虫正在工作，请耐心等待')
     try:
-        ACMer = FileManager(file, False)
+        ACMer = FileManager(file, cr)
     except json.decoder.JSONDecodeError:
         tkinter.messagebox.showerror('Error', 'JSON Error\nJSON编码出错')
         log.set("Crawl Error")
-        exit(0)
+        return False
     except Exception:
         tkinter.messagebox.showerror('Error', 'Unknown Error')
         log.set("Crawl Error")
-        exit(0)
+        return False
+    return True
 
 
 def history():
-    set_acm_er()
+    if not set_acm_er():
+        return
     tkinter.messagebox.showinfo('History', ACMer.get_history())
 
 
 def account_data():
-    set_acm_er()
+    if not set_acm_er():
+        return
     tkinter.messagebox.showinfo('History', ACMer.get_user())
 
 
@@ -145,9 +137,8 @@ if len(sys.argv) > 1:
         pass
     elif sys.argv[1] == '-c':
         try_api()
-        handle = threading.Thread(target=thr, kwargs={"file_name": sys.argv[2]})
+        handle = threading.Thread(target=thr, kwargs={"file": sys.argv[2]})
         handle.daemon = True
-        tkinter.messagebox.showinfo('running', 'Crawler is running, please wait for a minute\n爬虫正在工作，请耐心等待')
         handle.start()
     elif sys.argv[1] == '-q':
         try:
