@@ -88,7 +88,7 @@ def history():
 def account_data():
     if not set_acm_er():
         return
-    tkinter.messagebox.showinfo('History', ACMer.get_user())
+    tkinter.messagebox.showinfo('Account', ACMer.get_user())
 
 
 mainWin = tkinter.Tk()
